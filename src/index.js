@@ -2,18 +2,64 @@ const TextToSVG = require('text-to-svg');
 const path = require('path');
 const sharp = require('sharp');
 const Router = require('@koa/router');
+const bodyParser = require('koa-bodyparser');
+
 const ExifReader = require('exifreader');
-
+const fs = require('fs');
 // https://www.googlefonts.cn/
+// https://www.flickr.com/cameras
 
-// const file = path.join(process.cwd(), 'resource/16.jpeg');
+const getResource = (image) => {
+  return path.join(process.cwd(), `resource/${image}`)
+}
 const readImage = async (file) => {
   return ExifReader.load(file,{expanded: true});
 }
+// (async function(){
+//   const data = await readImage(getResource('rendered.jpeg'));
+//   console.log(1, data.exif);
+// })()
 
-const getImage = (image) => {
-  return path.join(process.cwd(), `resource/${image}`)
+const isCanon = (device) => {
+  return device.toLowerCase().includes('canon');
 }
+const isSony = (device) => {
+  return device.toLowerCase().includes('sony');
+}
+const isApple = (device) => {
+  return device.toLowerCase().includes('apple');
+}
+const isNikon = (device) => {
+  return device.toLowerCase().includes('nikon');
+}
+const isFujifilm = (device) => {
+  return device.toLowerCase().includes('fujifilm');
+}
+
+const isLeica = (device) => {
+  return device.toLowerCase().includes('leica');
+}
+
+const isHuawei = (device) => {
+  return device.toLowerCase().includes('huawei');
+}
+
+const isHassel = (device) => {
+  return device.toLowerCase().includes('hasselblad');
+}
+
+const isDji = (device) => {
+  return device.toLowerCase().includes('dji');
+}
+
+const isRicoh = (device) => {
+  return device.toLowerCase().includes('ricoh');
+}
+
+const isPanasonic = (device) => {
+  return device.toLowerCase().includes('panasonic');
+}
+
 const marginLeftAndRight = 100;
 const bottomHeight = 168;
 const fontSize = 48;
@@ -21,7 +67,6 @@ const logoSize = 64;
 const padding = 15;
 const dividPadding = 20;
 const dividWidth = 2;
-const isDark = true;
 
 const darkConfig = {
   bg:  {
@@ -43,7 +88,7 @@ const lightConfig = {
   fontColor: 'black',
 }
 
-async function addWatermark(basePicture, config) {
+async function addWatermark(basePicture, config, isDark) {
   const reader = sharp(basePicture);
   const { width = 0, height = 0 } = await reader.metadata();
   const base = sharp({
@@ -56,32 +101,46 @@ async function addWatermark(basePicture, config) {
   });
   const { exif } = await readImage(basePicture);
   if(exif) {
-    console.log('相机品牌', exif.Make ? exif.Make.description : '');
-    console.log('相机型号', exif.Model ? exif.Model.description : '');
-    console.log('快门时间', exif.ExposureTime ? exif.ExposureTime.description : '');
-    console.log('光圈', exif.FNumber ? exif.FNumber.description : '');
-    console.log('ISO', exif.ISOSpeedRatings ? exif.ISOSpeedRatings.description : '');
-    console.log('焦距', exif.FocalLength ? exif.FocalLength.description : '');
-    console.log('镜头型号', exif.LensModel ? exif.LensModel.description : '');
-    console.log('镜头规格', exif.LensSpecification ? exif.LensSpecification.description : '');
-    console.log('拍摄时间', exif.DateTime ? exif.DateTime.description : '');
+    // console.log('相机品牌', exif.Make ? exif.Make.description : '');
+    // console.log('相机型号', exif.Model ? exif.Model.description : '');
+    // console.log('快门时间', exif.ExposureTime ? exif.ExposureTime.description : '');
+    // console.log('光圈', exif.FNumber ? exif.FNumber.description : '');
+    // console.log('ISO', exif.ISOSpeedRatings ? exif.ISOSpeedRatings.description : '');
+    // console.log('焦距', exif.FocalLength ? exif.FocalLength.description : '');
+    // console.log('镜头型号', exif.LensModel ? exif.LensModel.description : '');
+    // console.log('镜头规格', exif.LensSpecification ? exif.LensSpecification.description : '');
+    // console.log('拍摄时间', exif.DateTime ? exif.DateTime.description : '');
     const options = {
+      fontSize ,
+      anchor: 'top',
+      attributes: {
+        fill: config.fontColor
+      }
+    };
+    const subOptions = {
       fontSize,
       anchor: 'top',
       attributes: {
         fill: config.fontColor
       }
     };
-    const textToSvgSync = TextToSVG.loadSync(getImage('Prompt-Regular.ttf'));
     const make = exif.Make ? exif.Make.description : '';
     const model = exif.Model ? exif.Model.description : '';
-    const focalLength = exif.FocalLength ? exif.FocalLength.description : '';
+    const focalLength = (exif.FocalLength ? exif.FocalLength.description : '').replace(/\s+/g, '');
     const fNumber = 
       exif.FNumber && exif.FNumber.description ? exif.FNumber.description : '';
     const exposureTime = 
       exif.ExposureTime && exif.ExposureTime.description ? exif.ExposureTime.description : '';
     const iso =
       exif.ISOSpeedRatings && exif.ISOSpeedRatings.description ? exif.ISOSpeedRatings.description : '';
+
+    const time = exif.DateTime ? exif.DateTime.description : '';
+
+    if(!make && !model) {
+      return reader.toBuffer();
+    }
+    const textToSvgSync = TextToSVG.loadSync(getResource('font/Prompt-Regular.ttf'));
+    const textLightToSvgSync = TextToSVG.loadSync(getResource('font/Prompt-Light.ttf'));
 
     // 焦距 光圈 快门 ios
     const basicInfo = `${focalLength} ${fNumber} ${exposureTime} ${iso}`;
@@ -92,35 +151,55 @@ async function addWatermark(basePicture, config) {
     const basicInfoTextHeight = basicInfoTextMeta.height || 0;
 
     // 相机名字
-    const deviceName = `${make} ${model}`;
+    const deviceName = isApple(make) ? `${make} ${model}` : model;
     const modelTextBuffer = Buffer.from(textToSvgSync.getSVG(deviceName, options));
-    const modelTextReader = sharp(modelTextBuffer);
-    const modelTextMeta = await modelTextReader.metadata();
-    // const modelTextWidth = modelTextMeta.width || 0;
-    const modelTextHeight = modelTextMeta.height || 0;
+    // const modelTextReader = sharp(modelTextBuffer);
+    // const modelTextMeta = await modelTextReader.metadata();
+    // const modelTextHeight = modelTextMeta.height || 0;
     // time
-    const time = `${exposureTime}`;
-    const timeTextBuffer = Buffer.from(textToSvgSync.getSVG(time, options));
+    const timeTextBuffer = Buffer.from(textLightToSvgSync.getSVG(time, subOptions));
     const timeTextReader = sharp(timeTextBuffer);
     const timeTextMeta = await timeTextReader.metadata();
     const timeTextHeight = timeTextMeta.height || 0;
 
     // icon
-    const dji = await sharp(getImage('dji-dark.svg')).resize({ height: logoSize }).toBuffer();
-    const canon = await sharp(getImage('canon.svg')).resize({ height: logoSize }).toBuffer();
-    const fujifilm = await sharp(getImage('fujifilm.svg')).resize({ height: logoSize }).toBuffer();
-    const hassel = await sharp(getImage('hassel-blue.svg')).resize({ height: logoSize }).toBuffer();
-    const nikon = await sharp(getImage('nikon.svg')).resize({ height: logoSize }).toBuffer();
-    const huawei = await sharp(getImage('huawei.svg')).resize({ height: logoSize }).toBuffer();
-    const sony = await sharp(getImage('sony.svg')).resize({ height: logoSize }).toBuffer();
-    const leica = await sharp(getImage('leica.svg')).resize({ height: logoSize }).toBuffer();
-    const apple = await sharp(getImage('apple-dark.svg')).resize({ height: logoSize }).toBuffer();
-    const icon = sharp(getImage('apple-dark.svg')).resize({ height: logoSize });
-    const iconMeta = await icon.metadata();
-    console.log(iconMeta.width, iconMeta.height)
-    const iconWidth = 0;
-    const iconBuffer = await icon.toBuffer();
-    
+    // const dji = await sharp(getResource('dji-dark.svg')).resize({ height: logoSize }).toBuffer();
+    // const canon = await sharp(getResource('canon.svg')).resize({ height: logoSize }).toBuffer();
+    // const fujifilm = await sharp(getResource('fujifilm.svg')).resize({ height: logoSize }).toBuffer();
+    // const hassel = await sharp(getResource('hassel-blue.svg')).resize({ height: logoSize }).toBuffer();
+    // const nikon = await sharp(getResource('nikon.svg')).resize({ height: logoSize }).toBuffer();
+    // const huawei = await sharp(getResource('huawei.svg')).resize({ height: logoSize }).toBuffer();
+    // const sony = await sharp(getResource('sony.svg')).resize({ height: logoSize }).toBuffer();
+    // const leica = await sharp(getResource('leica.svg')).resize({ height: logoSize }).toBuffer();
+    // const apple = await sharp(getResource('apple-dark.svg')).resize({ height: logoSize }).toBuffer();
+    let icon = await sharp(getResource('apple-dark.svg')).resize({ height: logoSize }).toBuffer();
+    if(isApple(make)) {
+      icon = await sharp(getResource(isDark ? 'apple-light.svg' : 'apple-dark.svg')).resize({ height: logoSize }).toBuffer();;
+    } else if(isCanon(make)) {
+      icon = await sharp(getResource('canon.svg')).resize({ height: logoSize }).toBuffer();;
+    } else if(isNikon(make)) {
+      icon = await sharp(getResource('nikon.svg')).resize({ height: logoSize }).toBuffer();
+    } else if (isSony(make)) {
+      icon = await sharp(getResource(isDark ? 'sony-light.svg' : 'sony.svg')).resize({ height: logoSize }).toBuffer();
+    } else if(isFujifilm(make)) {
+      // 待调整
+      icon = await sharp(getResource(isDark ? 'fujifilm-light.svg' : 'fujifilm.svg' )).resize({ height: logoSize / 2 }).toBuffer();
+    } else if(isLeica(make)) {
+      icon = await sharp(getResource('leica.svg')).resize({ height: logoSize }).toBuffer();
+    } else if(isHuawei(make)) {
+      icon = await sharp(getResource('huawei.svg')).resize({ height: logoSize }).toBuffer();
+    } else if(isHassel(make)) {
+      icon = await sharp(getResource(isDark ? 'hassel-light.svg' : 'hassel-dark.svg' )).resize({ height: logoSize }).toBuffer();
+    }  else if(isDji(make)) {
+      icon = await sharp(getResource(isDark ? 'dji-light.svg' : 'dji-dark.svg' )).resize({ height: logoSize }).toBuffer();
+    } else if(isRicoh(make)) {
+      icon = await sharp(getResource(isDark ? 'ricoh.svg' : 'ricoh.svg' )).resize({ height: logoSize }).toBuffer();
+    } else if(isPanasonic(make)) {
+      icon = await sharp(getResource(isDark ? 'panasonic-blue.svg' : 'panasonic-blue.svg' )).resize({ height: logoSize }).toBuffer();
+    }
+    const iconMeta = await sharp(icon).metadata();
+    const iconWidth = iconMeta.width || 0;
+    const iconHeight = iconMeta.height || 0;
     return base.composite([
       {
         input: basePicture,
@@ -156,15 +235,9 @@ async function addWatermark(basePicture, config) {
         top: Math.round(height + bottomHeight / 2 - basicInfoTextHeight / 2),
         left: width - basicInfoTextWidth - marginLeftAndRight
       },
-      // {
-      //   // input: path.join(process.cwd(), 'resource/apple-light.svg'),
-      //   input: path.join(process.cwd(), 'resource/dji-dark.svg'),
-      //   top: Math.round(height + bottomHeight/2 - logoSize / 2),
-      //   left: Math.round(width / 2)
-      // },
       {
-        input: iconBuffer,
-        top: Math.round(height + bottomHeight/2 - logoSize / 2),
+        input: icon,
+        top: Math.round(height + bottomHeight/2 - iconHeight / 2),
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding - dividPadding - dividWidth - iconWidth
       }
     ])
@@ -177,6 +250,8 @@ async function addWatermark(basePicture, config) {
     .catch(err => {
       console.log(err)
     })
+  } else {
+    return reader.toBuffer();
   }
 }
 
@@ -190,18 +265,54 @@ const router = new Router();
 
 router.get('/api/watermark', async (ctx, next) => {
   let config = lightConfig;
-  if (ctx.query.isdark) {
+  const isDark = !!ctx.query.isdark;
+  if (isDark) {
     config = darkConfig
   }
-  const image = await addWatermark(getImage('demo.jpeg'),config);
+  const image = await addWatermark(getResource('test/apple-test.jpg'), config, isDark);
   // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
-  console.log(ctx.query.isdark)
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/base64.txt'), image.toString('base64'));
+
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
+
   ctx.body = image;
   ctx.type = 'image/jpeg';
 });
 
+router.post('/api/watermark', async (ctx, next) => {
+  let config = lightConfig;
+  const isDark = !!ctx.request.body.isdark;
+  const img = ctx.request.body.img;
+  if (isDark) {
+    config = darkConfig
+  }
+  if(img) {
+    const image = await addWatermark(Buffer.from(img, 'base64'), config, isDark);
+    ctx.body = {
+      code: 0,
+      img: image.toString('base64')
+    }
+    // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), image);
+  } else {
+    ctx.body = {
+      code: 1001,
+      message: 'img is empty'
+    }
+  }
+  // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/base64.txt'), image.toString('base64'));
+  // const base64Data = fs.readFileSync(path.join(process.cwd(), 'resource/base64.txt'), 'utf-8');
+  
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(ctx.request.body.img, 'base64'));
+
+  
+  // ctx.type = 'image/jpeg';
+  // ctx.body = Buffer.from(ctx.request.body.img, 'base64');
+});
+
+app.use(bodyParser());
 app
-  .use(router.routes())
+  .use(router.routes());
 
 app.listen(3008, () => {
     console.log('3008项目启动')
