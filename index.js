@@ -263,6 +263,10 @@ const Koa = require('koa');
 const app = new Koa();
 const router = new Router();
 
+router.get('/', async (ctx, next) => {
+  ctx.body = 'ok';
+});
+
 router.get('/api/watermark', async (ctx, next) => {
   let config = lightConfig;
   const isDark = !!ctx.query.isdark;

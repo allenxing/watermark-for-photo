@@ -4,8 +4,8 @@
   "description": "watermark for photo",
   "main": "index.js",
   "scripts": {
-    "build": "node src/index.js",
-    "installsharp": "npm install --force @img/sharp-linux-x64"
+    "installsharp": "npm install --force @img/sharp-linux-x64",
+    "start": "node index.js"
   },
   "author": "allenxing",
   "license": "ISC",
