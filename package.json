@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node src/index.js",
-    "installsharp": "npm install --os=linux --cpu=x64 sharp"
+    "installsharp": "npm install --force @img/sharp-linux-x64"
   },
   "author": "allenxing",
   "license": "ISC",
@@ -15,6 +15,7 @@
     "exifreader": "^4.17.0",
     "koa": "^2.14.2",
     "koa-bodyparser": "^4.4.1",
+    "sharp": "^0.33.0",
     "text-to-svg": "^3.1.5"
   }
 }
