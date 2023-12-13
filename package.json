@@ -9,7 +9,6 @@
   "author": "allenxing",
   "license": "ISC",
   "dependencies": {
-    "@img/sharp-darwin-x64": "^0.33.0",
     "@koa/router": "^12.0.1",
     "@vercel/node": "^3.0.12",
     "exifreader": "^4.17.0",
