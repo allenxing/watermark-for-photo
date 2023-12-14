@@ -1,0 +1,160 @@
+{
+    ColorModel = RGB;
+    DPIHeight = 72;
+    DPIWidth = 72;
+    Depth = 8;
+    Orientation = 6;
+    PixelHeight = 3024;
+    PixelWidth = 4032;
+    PrimaryImage = 1;
+    ProfileName = "Display P3";
+    "{Exif}" =     {
+        ApertureValue = "1.356143809255609";
+        BrightnessValue = "2.378580270627908";
+        ColorSpace = 65535;
+        ComponentsConfiguration =         (
+            1,
+            2,
+            3,
+            0
+        );
+        CompositeImage = 2;
+        DateTimeDigitized = "2021:04:25 20:37:40";
+        DateTimeOriginal = "2021:04:25 20:37:40";
+        ExifVersion =         (
+            2,
+            3,
+            2
+        );
+        ExposureBiasValue = 0;
+        ExposureMode = 0;
+        ExposureProgram = 2;
+        ExposureTime = "0.016666666666666666";
+        FNumber = "1.6";
+        Flash = 16;
+        FlashPixVersion =         (
+            1,
+            0
+        );
+        FocalLenIn35mmFilm = 26;
+        FocalLength = "5.1";
+        ISOSpeedRatings =         (
+            160
+        );
+        LensMake = Apple;
+        LensModel = "iPhone 12 Pro Max back triple camera 5.1mm f/1.6";
+        LensSpecification =         (
+            "1.539999961853027",
+            "7.5",
+            "1.600000023841858",
+            "2.400000095367432"
+        );
+        MeteringMode = 5;
+        OffsetTime = "+08:00";
+        OffsetTimeDigitized = "+08:00";
+        OffsetTimeOriginal = "+08:00";
+        PixelXDimension = 4032;
+        PixelYDimension = 3024;
+        SceneCaptureType = 0;
+        SceneType = 1;
+        SensingMethod = 2;
+        ShutterSpeedValue = "5.914499196065449";
+        SubjectArea =         (
+            2002,
+            1503,
+            2213,
+            1327
+        );
+        SubsecTimeDigitized = 254;
+        SubsecTimeOriginal = 254;
+        WhiteBalance = 0;
+    };
+    "{GPS}" =     {
+        Altitude = "21.70920166720103";
+        AltitudeRef = 0;
+        DateStamp = "2021:04:25";
+        DestBearing = "179.0523985239852";
+        DestBearingRef = T;
+        HPositioningError = "14.98594100396757";
+        ImgDirection = "179.0523985239852";
+        ImgDirectionRef = T;
+        Latitude = "22.54658";
+        LatitudeRef = N;
+        Longitude = "113.9088966666667";
+        LongitudeRef = E;
+        Speed = "1.940000057221823";
+        SpeedRef = K;
+    };
+    "{MakerApple}" =     {
+        1 = 12;
+        12 =         (
+            "0.8359375",
+            "0.2578125"
+        );
+        13 = 0;
+        14 = 4;
+        16 = 1;
+        2 =         {
+            "__type__" = data;
+            "__value__" = "rQCVAJ0AmQDhAB0B4gEbAf0A3wCQAA4BbwAcAAYAIACjAJ4AoACdAPMAPgHkATgBDwFmAcAAtgBeAB4ABwAgAK4AqQCpAJQA5gCGAWQC7wD4ACsB6ABsAGQAHwAIACEA3ACyAK4AnwA/AXsCMQMmAmABPAHMAHgAXQAfAAgAIQAQAeQArwCgALIB/gK6Az8DXwKJAQgBoQBaACMACQAiACkB6wDBALgAtAHnArcDPgNKAocB5QCMAGoAIAAJACMAPwH9ANIArgBOAY8CnwOMAtcA/ABlAGUAWgAUAAoAIwBEAf0AuwCQAPsA0QGmAqMACAAfACYAIQAhAAUABQAPAN8AtgC0AIcA3wBXAd0BEAFfAKYAFwATABQABQAEAAgAmwCZAKAAiADYADYBnAFzAUkBQAGQACMAFQAJAAgAFQCYAIgAkwCHAMwAOgGSAXMBtgDZANcAdAA6AAcADwAhANIAlgCKAIIAxQB1Ac8BdgGfAMYAqABvAEEABgAQACEA6QCvAI8AgADxAPgBegJ3Ae4A6wD1AJkARQAEABEAIgDfAK0AkgB6ADQBhgJBA7AC1QFqARIBmQBNAAMAEgAhANUAoQCJAHgAcAGkAnkD5wL2AVQB8ACEAEsAAwATACEA1wCdAHwAZwAnAS8COwMiAlsB0ACuAH0ASAADABMAIAA=";
+        };
+        20 = 12;
+        23 = 1112547328;
+        25 = 8192;
+        26 = q900n;
+        3 =         {
+            epoch = 0;
+            flags = 1;
+            timescale = 1000000000;
+            value = 810984330909416;
+        };
+        31 = 0;
+        32 = "D5B05CF9-8C23-4313-B981-D9BFAF87D132";
+        33 = "0.7844365239143372";
+        35 =         (
+            153,
+            268435587
+        );
+        37 = 4238;
+        38 = 3;
+        39 = "38.85898208618164";
+        4 = 1;
+        43 = "F8D86EE4-8FA4-4910-884F-3278DC891E7F";
+        45 = 2687;
+        46 = 1;
+        47 = 68;
+        48 = "0.0067791007459163666";
+        5 = 190;
+        51 = 12288;
+        52 = 5;
+        53 = 4;
+        54 = 413;
+        55 = 4;
+        56 = 110;
+        57 = 0;
+        58 = 4;
+        59 = 0;
+        6 = 198;
+        60 = 4;
+        61 = 29;
+        7 = 1;
+        8 =         (
+            "-0.030475037172436714",
+            "-0.9974026679992676",
+            "0.0044502471573650837"
+        );
+    };
+    "{TIFF}" =     {
+        DateTime = "2021:04:25 20:37:40";
+        HostComputer = "iPhone 12 Pro Max";
+        Make = Apple;
+        Model = "iPhone 12 Pro Max";
+        Orientation = 6;
+        ResolutionUnit = 2;
+        Software = "14.4.2";
+        TileLength = 512;
+        TileWidth = 512;
+        XResolution = 72;
+        YResolution = 72;
+    };
+}
