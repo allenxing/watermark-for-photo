@@ -6,8 +6,7 @@
   "scripts": {
     "installsharpImg": "npm install --force @img/sharp-linux-x64",
     "installsharp": "npm install --os=linux --cpu=x64 sharp",
-    "start": "node index.js",
-    "install": "yarn installsharp"
+    "start": "node index.js"
   },
   "author": "allenxing",
   "license": "ISC",
@@ -17,6 +16,7 @@
     "exifreader": "^4.17.0",
     "koa": "^2.14.2",
     "koa-bodyparser": "^4.4.1",
+    "sharp": "^0.32.0",
     "text-to-svg": "^3.1.5"
   }
 }
