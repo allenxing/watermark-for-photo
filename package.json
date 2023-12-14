@@ -7,7 +7,7 @@
     "installsharpImg": "npm install --force @img/sharp-linux-x64",
     "installsharp": "npm install --os=linux --cpu=x64 sharp",
     "start": "node index.js",
-    "install": "npm run installsharp &&  yarn add  koa @koa/router exifreader @vercel/node text-to-svg koa-bodyparser"
+    "install": "yarn installsharp"
   },
   "author": "allenxing",
   "license": "ISC",
