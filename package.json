@@ -7,7 +7,7 @@
     "installsharpImg": "npm install --force @img/sharp-linux-x64",
     "installsharp": "npm install --os=linux --cpu=x64 sharp",
     "start": "node index.js",
-    "preinstall": "npm run installsharp"
+    "preinstall": "npm run installsharp && yarn install"
   },
   "author": "allenxing",
   "license": "ISC",
