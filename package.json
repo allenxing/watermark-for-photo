@@ -4,7 +4,8 @@
   "description": "watermark for photo",
   "main": "index.js",
   "scripts": {
-    "installsharp": "npm install --force @img/sharp-linux-x64",
+    "installsharpImg": "npm install --force @img/sharp-linux-x64",
+    "installsharp": "npm install --os=linux --cpu=x64 sharp",
     "start": "node index.js",
     "preinstall": "npm run installsharp"
   },

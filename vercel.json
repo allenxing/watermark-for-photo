@@ -11,6 +11,5 @@
           "src": "(.*)",
           "dest": "index.js"
       }
-  ],
-  "installCommand": "npm run installsharp && npm install"  
+  ]
 }
