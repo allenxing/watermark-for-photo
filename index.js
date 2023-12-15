@@ -255,66 +255,18 @@ async function autoAddWatermark(basePicture, config, isDark) {
   }
 }
 
-
-
-// yarn add sharp --ignore-engines
-
-const Koa = require('koa');
-const app = new Koa();
-const router = new Router();
-
-router.get('/', async (ctx, next) => {
-  ctx.body = 'ok';
-});
-
-router.get('/api/watermark', async (ctx, next) => {
-  let config = lightConfig;
-  const isDark = !!ctx.query.isdark;
-  if (isDark) {
-    config = darkConfig
-  }
-  const image = await autoAddWatermark(getResource('test/apple-test.jpg'), config, isDark);
-  // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
-  // await fs.writeFileSync(path.join(process.cwd(), 'resource/base64.txt'), image.toString('base64'));
-
-  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
-
-  ctx.body = image;
-  ctx.type = 'image/jpeg';
-});
-
-// router.post('/api/watermark', async (ctx, next) => {
-//   let config = lightConfig;
-//   const isDark = !!ctx.request.body.isdark;
-//   const img = ctx.request.body.img;
-//   if (isDark) {
-//     config = darkConfig
-//   }
-//   if(img) {
-//     const image = await addWatermark(Buffer.from(img, 'base64'), config, isDark);
-//     ctx.body = {
-//       code: 0,
-//       img: image.toString('base64')
-//     }
-//   } else {
-//     ctx.body = {
-//       code: 1001,
-//       message: 'img is empty'
-//     }
-//   }
-// });
-
-async function addWatermark(config, isDark, exif) {
-  const watermarkWidth = 1920;
+async function addWatermark(config, isDark, exif, tiff, gps) {
+  const width = 1920;
   const base = sharp({
     create: {
-      width: watermarkWidth,
+      width: width,
       height: bottomHeight,
       channels: 4,
       background: config.bg
     }
   });
-  if(exif) {
+
+  if(exif && tiff) {
     const options = {
       fontSize ,
       anchor: 'top',
@@ -329,20 +281,18 @@ async function addWatermark(config, isDark, exif) {
         fill: config.fontColor
       }
     };
-    const make = exif.Make ? exif.Make.description : '';
-    const model = exif.Model ? exif.Model.description : '';
-    const focalLength = (exif.FocalLength ? exif.FocalLength.description : '').replace(/\s+/g, '');
-    const fNumber = 
-      exif.FNumber && exif.FNumber.description ? exif.FNumber.description : '';
-    const exposureTime = 
-      exif.ExposureTime && exif.ExposureTime.description ? exif.ExposureTime.description : '';
-    const iso =
-      exif.ISOSpeedRatings && exif.ISOSpeedRatings.description ? exif.ISOSpeedRatings.description : '';
+    
+    const model = tiff.Model || '';
+    const make = tiff.Make || '';
+    const focalLength = exif.FocalLenIn35mmFilm || '';
+    const fNumber = exif.FNumber || '';
+    const exposureTime = `1/${Math.round(1/ exif.ExposureTime)}`;
+    const iso = exif.ISOSpeedRatings || '';
 
-    const time = exif.DateTime ? exif.DateTime.description : '';
+    const time = exif.DateTimeOriginal || '';
 
-    if(!make && !model) {
-      return reader.toBuffer();
+    if(!model || !make) {
+      return;
     }
     const textToSvgSync = TextToSVG.loadSync(getResource('font/Prompt-Regular.ttf'));
     const textLightToSvgSync = TextToSVG.loadSync(getResource('font/Prompt-Light.ttf'));
@@ -356,7 +306,7 @@ async function addWatermark(config, isDark, exif) {
     const basicInfoTextHeight = basicInfoTextMeta.height || 0;
 
     // 相机名字
-    const deviceName = isApple(make) ? `${make} ${model}` : model;
+    const deviceName = model;
     const modelTextBuffer = Buffer.from(textToSvgSync.getSVG(deviceName, options));
     // const modelTextReader = sharp(modelTextBuffer);
     // const modelTextMeta = await modelTextReader.metadata();
@@ -368,15 +318,6 @@ async function addWatermark(config, isDark, exif) {
     const timeTextHeight = timeTextMeta.height || 0;
 
     // icon
-    // const dji = await sharp(getResource('dji-dark.svg')).resize({ height: logoSize }).toBuffer();
-    // const canon = await sharp(getResource('canon.svg')).resize({ height: logoSize }).toBuffer();
-    // const fujifilm = await sharp(getResource('fujifilm.svg')).resize({ height: logoSize }).toBuffer();
-    // const hassel = await sharp(getResource('hassel-blue.svg')).resize({ height: logoSize }).toBuffer();
-    // const nikon = await sharp(getResource('nikon.svg')).resize({ height: logoSize }).toBuffer();
-    // const huawei = await sharp(getResource('huawei.svg')).resize({ height: logoSize }).toBuffer();
-    // const sony = await sharp(getResource('sony.svg')).resize({ height: logoSize }).toBuffer();
-    // const leica = await sharp(getResource('leica.svg')).resize({ height: logoSize }).toBuffer();
-    // const apple = await sharp(getResource('apple-dark.svg')).resize({ height: logoSize }).toBuffer();
     let icon = await sharp(getResource('apple-dark.svg')).resize({ height: logoSize }).toBuffer();
     if(isApple(make)) {
       icon = await sharp(getResource(isDark ? 'apple-light.svg' : 'apple-dark.svg')).resize({ height: logoSize }).toBuffer();;
@@ -407,19 +348,14 @@ async function addWatermark(config, isDark, exif) {
     const iconHeight = iconMeta.height || 0;
     return base.composite([
       {
-        input: basePicture,
-        top: 0,
-        left: 0
-      },
-      {
         input: modelTextBuffer,
-        top: height + padding,
+        top: padding,
         // top: Math.round(height + bottomHeight/2 - modelTextHeight / 2),
         left: marginLeftAndRight
       },
       {
         input: timeTextBuffer,
-        top: height + bottomHeight - padding - timeTextHeight,
+        top: bottomHeight - padding - timeTextHeight,
         left: marginLeftAndRight
       },
       // 分割线
@@ -432,17 +368,17 @@ async function addWatermark(config, isDark, exif) {
             background: config.dividBg
           }
         },
-        top: height + 50,
+        top: 50,
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding
       },
       {
         input: basicInfoBuffer,
-        top: Math.round(height + bottomHeight / 2 - basicInfoTextHeight / 2),
+        top: Math.round(bottomHeight / 2 - basicInfoTextHeight / 2),
         left: width - basicInfoTextWidth - marginLeftAndRight
       },
       {
         input: icon,
-        top: Math.round(height + bottomHeight/2 - iconHeight / 2),
+        top: Math.round(bottomHeight/2 - iconHeight / 2),
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding - dividPadding - dividWidth - iconWidth
       }
     ])
@@ -459,6 +395,66 @@ async function addWatermark(config, isDark, exif) {
     return reader.toBuffer();
   }
 }
+
+
+
+// yarn add sharp --ignore-engines
+
+const Koa = require('koa');
+const app = new Koa();
+const router = new Router();
+
+router.get('/', async (ctx, next) => {
+  ctx.body = 'ok';
+});
+
+router.get('/api/watermark', async (ctx, next) => {
+  let config = lightConfig;
+  const isDark = !!ctx.query.isdark;
+  if (isDark) {
+    config = darkConfig
+  }
+  const image = await autoAddWatermark(getResource('test/apple-test.jpg'), config, isDark);
+  // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/base64.txt'), image.toString('base64'));
+
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
+
+  ctx.body = image;
+  ctx.type = 'image/jpeg';
+});
+
+router.post('/api/watermark', async (ctx, next) => {
+  let config = lightConfig;
+  const {isDark, exif, tiff, gps} = ctx.request.body
+  const isdark = !!isDark;
+  if (isdark) {
+    config = darkConfig
+  }
+
+  if(!exif) {
+    ctx.body = {
+      code: 1001,
+      message: 'exif is empty'
+    }
+  }
+  console.log('--------');
+  console.log(exif);
+  const image = await addWatermark(config, isdark, exif, tiff, gps);
+  if (image) {
+    await fs.writeFileSync(path.join(process.cwd(), 'resource/bottom.jpg'), image);
+    ctx.body = {
+      code: 0,
+      img: image.toString('base64')
+    }
+  } else {
+    ctx.body = {
+      code: 1002,
+      message: 'error'
+    }
+  }
+});
+
 
 app.use(bodyParser());
 app
