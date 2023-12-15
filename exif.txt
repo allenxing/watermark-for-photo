@@ -158,3 +158,17 @@
         YResolution = 72;
     };
 }
+
+// api body
+{
+  "exif": {
+    "FocalLenIn35mmFilm": "26",
+    "DateTimeOriginal": "2021:04:25 20:37:40",
+    "ExposureTime": "0.016666666666666666",
+    "FNumber": "1.6"
+  },
+  "tiff": {
+    "Make": "Apple",
+    "Model": "iPhone 12 Pro Max"
+  }
+}

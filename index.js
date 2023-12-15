@@ -60,7 +60,7 @@ const isPanasonic = (device) => {
   return device.toLowerCase().includes('panasonic');
 }
 
-const marginLeftAndRight = 100;
+const marginLeftAndRight = 24;
 const bottomHeight = 168;
 const fontSize = 48;
 const logoSize = 64;
@@ -275,7 +275,7 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
       }
     };
     const subOptions = {
-      fontSize,
+      fontSize: fontSize - 8,
       anchor: 'top',
       attributes: {
         fill: config.fontColor
@@ -284,7 +284,7 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
     
     const model = tiff.Model || '';
     const make = tiff.Make || '';
-    const focalLength = exif.FocalLenIn35mmFilm || '';
+    const focalLength = exif.FocalLenIn35mmFilm ? `${exif.FocalLenIn35mmFilm}mm` : '';
     const fNumber = exif.FNumber || '';
     const exposureTime = `1/${Math.round(1/ exif.ExposureTime)}`;
     const iso = exif.ISOSpeedRatings || '';
@@ -436,24 +436,35 @@ router.post('/api/watermark', async (ctx, next) => {
       message: 'exif is empty'
     }
   }
-  console.log('--------');
   console.log(exif);
   console.log(tiff);
-  let exifObj
-  if (exif) {
-    exifObj = JSON.parse(exif);
+  let exifObj = exif;
+  if (exif && typeof exif === 'string') {
+    try {
+      exifObj = JSON.parse(exif);
+    } catch (error) {
+      
+    }
   }
-  let tiffObj
-  if (tiff) {
-    tiffObj = JSON.parse(tiff);
+  let tiffObj = tiff;
+  if (tiff && typeof tiffObj === 'string') {
+    try {
+      tiffObj = JSON.parse(tiff);
+    } catch (error) {
+      
+    }
   }
-  let gpsObj
-  if (gps) {
-    gpsObj = JSON.parse(gps);
+  let gpsObj = gps;
+  if (gps && typeof gps === 'string') {
+    try {
+      gpsObj = JSON.parse(gps);
+    } catch (error) {
+      
+    }
   }
   const image = await addWatermark(config, isdark, exifObj, tiffObj, gpsObj);
   if (image) {
-    // await fs.writeFileSync(path.join(process.cwd(), 'resource/bottom.jpg'), image);
+    await fs.writeFileSync(path.join(process.cwd(), 'resource/bottom.jpg'), image);
     ctx.body = {
       code: 0,
       img: image.toString('base64')
