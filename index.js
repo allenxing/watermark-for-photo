@@ -438,6 +438,7 @@ router.post('/api/watermark', async (ctx, next) => {
   }
   console.log('--------');
   console.log(exif);
+  console.log(tiff);
   const image = await addWatermark(config, isdark, exif, tiff, gps);
   if (image) {
     // await fs.writeFileSync(path.join(process.cwd(), 'resource/bottom.jpg'), image);
