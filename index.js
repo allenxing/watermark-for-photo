@@ -285,9 +285,9 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
     const model = tiff.Model || '';
     const make = tiff.Make || '';
     const focalLength = exif.FocalLenIn35mmFilm ? `${exif.FocalLenIn35mmFilm}mm` : '';
-    const fNumber = exif.FNumber || '';
+    const fNumber = exif.FNumber ? `f/${exif.FNumber}` : '';
     const exposureTime = `1/${Math.round(1/ exif.ExposureTime)}`;
-    const iso = exif.ISOSpeedRatings || '';
+    const iso = exif.ISOSpeedRatings ? `ISO${exif.ISOSpeedRatings}` : '';
 
     const time = exif.DateTimeOriginal || '';
 
