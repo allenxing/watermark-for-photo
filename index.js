@@ -289,7 +289,7 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
     const exposureTime = `1/${Math.round(1/ exif.ExposureTime)}`;
     const iso = exif.ISOSpeedRatings ? `ISO${exif.ISOSpeedRatings}` : '';
 
-    const time = exif.DateTimeOriginal || '';
+    const time = (exif.DateTimeOriginal || '').replace(/(\d{4}):(\d{2}):(\d{2})/g, "$1.$2.$3");;
 
     if(!model || !make) {
       return;
