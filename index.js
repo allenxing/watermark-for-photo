@@ -88,6 +88,16 @@ const lightConfig = {
   fontColor: 'black',
 }
 
+const borderConfig = {
+  margin: 10,
+  dark: {
+    r: 0, g: 0, b: 0, alpha: 1,
+  },
+  light: {
+    r: 255, g: 255, b: 255, alpha: 1,
+  }
+}
+
 async function autoAddWatermark(basePicture, config, isDark) {
   const reader = sharp(basePicture);
   const { width = 0, height = 0 } = await reader.metadata();
@@ -394,6 +404,35 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
   }
 }
 
+async function addBorder(imageWdith, imageHeight, marginWdith, color) {
+  // const reader = sharp(basePicture);
+  // const { width = 0, height = 0 } = await reader.metadata();
+  const bg = sharp({
+    create: {
+      width: imageWdith +  marginWdith *2,
+      height: imageHeight + marginWdith * 2,
+      channels: 4,
+      background: color
+    }
+  });
+  return bg.composite([
+    {
+      input: basePicture,
+      top: borderWidth,
+      left: borderWidth
+    }
+  ])
+  .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+  .webp({
+      quality: 100
+  }) //使用这些WebP选项来输出图像。
+  // .toFile(newFilePath)
+  .toBuffer()
+  .catch(err => {
+    console.log(err)
+  })
+}
+
 
 
 // yarn add sharp --ignore-engines
@@ -422,6 +461,8 @@ router.get('/api/watermark', async (ctx, next) => {
   ctx.type = 'image/jpeg';
 });
 
+
+// 水印
 router.post('/api/watermark', async (ctx, next) => {
   let config = lightConfig;
   const {isDark, exif, tiff, gps} = ctx.request.body
@@ -477,6 +518,19 @@ router.post('/api/watermark', async (ctx, next) => {
   }
 });
 
+// 边框
+router.get('/api/addborder', async (ctx, next) => {
+  const {margin, isdark, width, height } = ctx.query;
+  const color = isdark ? borderConfig.dark : borderConfig.light;
+  const marginWdith = margin ? Number(margin) : borderConfig.margin;
+  const imageWdith = Number(width);
+  const imageHeight = Number(height);
+  const image = await addBorder(imageWdith, imageHeight, marginWdith, color);
+  // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
+  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
+  ctx.body = image;
+  ctx.type = 'image/jpeg';
+});
 
 app.use(bodyParser());
 app
