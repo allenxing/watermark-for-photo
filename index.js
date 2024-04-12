@@ -520,11 +520,13 @@ router.post('/api/watermark', async (ctx, next) => {
 
 // 边框
 router.get('/api/addborder', async (ctx, next) => {
+  const limit = 3200;
   const {margin, isdark, width, height } = ctx.query;
   const color = isdark ? borderConfig.dark : borderConfig.light;
   const marginWdith = margin ? Number(margin) : borderConfig.margin;
-  const imageWdith = Number(width);
-  const imageHeight = Number(height);
+  const isToolBig =  Number(width) > limit;
+  const imageWdith = isToolBig ?  Number(width) / 2 :  Number(width);
+  const imageHeight =  isToolBig ?  Number(height) / 2 : Number(height);
   try {
     const image = await addBorder(imageWdith, imageHeight, marginWdith, color);
     // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
@@ -533,7 +535,8 @@ router.get('/api/addborder', async (ctx, next) => {
     // ctx.type = 'image/jpeg';
     ctx.body = {
       code: 0,
-      img: image.toString('base64')
+      img: image.toString('base64'),
+      half: isToolBig ? 1 : 0
     }
     
   } catch (error) {
