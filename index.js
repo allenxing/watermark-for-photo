@@ -409,20 +409,20 @@ async function addBorder(imageWdith, imageHeight, marginWdith, color) {
   // const { width = 0, height = 0 } = await reader.metadata();
   const bg = sharp({
     create: {
-      width: imageWdith +  marginWdith *2,
+      width: imageWdith +  marginWdith * 2,
       height: imageHeight + marginWdith * 2,
       channels: 4,
       background: color
     }
   });
-  return bg.composite([
-    {
-      input: basePicture,
-      top: borderWidth,
-      left: borderWidth
-    }
-  ])
-  .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+  // return bg.composite([
+  //   {
+  //     input: basePicture,
+  //     top: marginWdith,
+  //     left: marginWdith
+  //   }
+  // ])
+  return bg.withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
   .webp({
       quality: 100
   }) //使用这些WebP选项来输出图像。
