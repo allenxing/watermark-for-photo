@@ -525,11 +525,23 @@ router.get('/api/addborder', async (ctx, next) => {
   const marginWdith = margin ? Number(margin) : borderConfig.margin;
   const imageWdith = Number(width);
   const imageHeight = Number(height);
-  const image = await addBorder(imageWdith, imageHeight, marginWdith, color);
-  // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
-  // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
-  ctx.body = image;
-  ctx.type = 'image/jpeg';
+  try {
+    const image = await addBorder(imageWdith, imageHeight, marginWdith, color);
+    // const stream = await fs.readFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'));
+    // await fs.writeFileSync(path.join(process.cwd(), 'resource/rendered.jpeg'), Buffer.from(image.toString('base64'), 'base64'));
+    // ctx.body = image;
+    // ctx.type = 'image/jpeg';
+    ctx.body = {
+      code: 0,
+      img: image.toString('base64')
+    }
+    
+  } catch (error) {
+    ctx.body = {
+      code: 1003,
+      message: 'generate error'
+    }
+  }
 });
 
 app.use(bodyParser());
