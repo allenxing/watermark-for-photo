@@ -422,9 +422,9 @@ async function addBorder(imageWdith, imageHeight, marginWdith, color) {
   //     left: marginWdith
   //   }
   // ])
-  return bg.withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
-  .webp({
-      quality: 100
+  // return bg.withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+  return bg.webp({
+      quality: 50
   }) //使用这些WebP选项来输出图像。
   // .toFile(newFilePath)
   .toBuffer()
