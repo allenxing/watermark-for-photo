@@ -251,7 +251,7 @@ async function autoAddWatermark(basePicture, config, isDark) {
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding - dividPadding - dividWidth - iconWidth
       }
     ])
-    .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+    .keepMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
     .webp({
         quality: 100
     }) //使用这些WebP选项来输出图像。
@@ -392,7 +392,7 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding - dividPadding - dividWidth - iconWidth
       }
     ])
-    .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+    .keepMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
     .webp({
         quality: 100
     }) //使用这些WebP选项来输出图像。
@@ -422,7 +422,7 @@ async function addBorder(imageWdith, imageHeight, marginWdith, color) {
   //     left: marginWdith
   //   }
   // ])
-  return bg.withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+  return bg.keepMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
   .webp({
       quality: 90
   }) //使用这些WebP选项来输出图像。
