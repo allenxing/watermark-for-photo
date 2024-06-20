@@ -392,8 +392,8 @@ async function addWatermark(config, isDark, exif, tiff, gps) {
         left: width - basicInfoTextWidth - marginLeftAndRight - dividPadding - dividPadding - dividWidth - iconWidth
       }
     ])
-    // .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
-    .withExifMerge(exif)
+    .withMetadata() // 在输出图像中包含来自输入图像的所有元数据(EXIF、XMP、IPTC)。
+    // .withExifMerge(exif)
     .webp({
         quality: 100
     }) //使用这些WebP选项来输出图像。
